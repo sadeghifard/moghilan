@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: moghilan-cloud-eureka-server-discovery-service
+server:
+  port: 8761
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+    enable-self-preservation: false
+    evication-interval-timer-in-ms: 100000

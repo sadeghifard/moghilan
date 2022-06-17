@@ -1,0 +1,27 @@
+{"properties": [
+  {
+    "name": "eureka.client.instance.prefer-ip-address",
+    "type": "java.lang.String",
+    "description": "A description for 'eureka.client.instance.prefer-ip-address'"
+  },
+  {
+    "name": "eureka.client.instance.home-page-url",
+    "type": "java.lang.String",
+    "description": "A description for 'eureka.client.instance.home-page-url'"
+  },
+  {
+    "name": "eureka.client.instance.health-check-url",
+    "type": "java.lang.String",
+    "description": "A description for 'eureka.client.instance.health-check-url'"
+  },
+  {
+    "name": "eureka.client.instance.status-page-url-path",
+    "type": "java.lang.String",
+    "description": "A description for 'eureka.client.instance.status-page-url-path'"
+  },
+  {
+    "name": "eureka.client.instance.instanceId",
+    "type": "java.lang.String",
+    "description": "A description for 'eureka.client.instance.instanceId'"
+  }
+]}
