@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.sadeghifard.moghilan</groupId>
-	<artifactId>moghilan-cloud-bank_info_microservice</artifactId>
+	<artifactId>moghilan-cloud-bank-info-microservice</artifactId>
 	<version>0.0.1</version>
-	<name>moghilan-cloud-bank_info_microservice</name>
+	<name>moghilan-cloud-bank-info-microservice</name>
 	<description>This is one of the banking application microservices that is called Bank Information microservice</description>
 	<properties>
 		<java.version>18</java.version>
