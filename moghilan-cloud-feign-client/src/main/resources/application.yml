@@ -3,7 +3,7 @@ spring:
     name: moghilan-cloud-feign-client
 
 server:
-  port: 8083
+  port: 8883
   
 eureka:
   client:
