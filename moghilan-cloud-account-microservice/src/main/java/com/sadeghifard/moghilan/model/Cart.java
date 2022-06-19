@@ -17,13 +17,16 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 
-@Entity
-@Table(name = "carts")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(name = "carts")
 public class Cart {
 	
 	@Id
@@ -49,7 +52,7 @@ public class Cart {
 	@Column(name = "password", nullable = false)
 	private String password;
 	
-	@ManyToOne(cascade = CascadeType.ALL, targetEntity = Account.class)
+	@ManyToOne(cascade = CascadeType.ALL, targetEntity = Cart.class)
 	@JoinColumn(name = "acount_id", referencedColumnName = "id")
 	private Account account;
 	

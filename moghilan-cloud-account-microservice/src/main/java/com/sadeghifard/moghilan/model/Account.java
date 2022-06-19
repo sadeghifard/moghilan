@@ -17,12 +17,16 @@ import com.sadeghifard.moghilan.enums.AccountStatus;
 import com.sadeghifard.moghilan.enums.AccountType;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "accounts")
+
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(name = "accounts")
 public class Account {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,8 +55,8 @@ public class Account {
 	@Column(name = "branch_no")
 	private Long branchNumber;
 	
-	@Column(name = "customer_id")
-	private Long customerId;
+	@Column(name = "customer_national_code")
+	private Long customerNationalCode;
 	
 	@Column(name = "create_date", nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
