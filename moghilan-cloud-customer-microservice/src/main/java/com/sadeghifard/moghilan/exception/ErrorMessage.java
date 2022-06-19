@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 public class ErrorMessage {
 	
 	  private int statusCode;
-	  @JsonFormat(shape = Shape.STRING, pattern = "DD-MM-YYY HH:MM:SS")
-	  private LocalDateTime timestamp;
+	  @JsonFormat(shape = Shape.STRING, pattern = "YYYY-MM-DD HH:MM:SS")
+	  private LocalDateTime dateTime;
 	  private String message;
 	  private String description;
 

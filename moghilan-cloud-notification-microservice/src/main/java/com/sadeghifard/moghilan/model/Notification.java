@@ -13,50 +13,32 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.sadeghifard.moghilan.enums.AccountStatus;
-import com.sadeghifard.moghilan.enums.AccountType;
+import org.hibernate.annotations.Where;
+
+import com.sadeghifard.moghilan.enums.NotificationStatus;
+import com.sadeghifard.moghilan.enums.NotificationType;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "accounts")
-public class Account {
+@Table
+public class Notification {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	private Long id;
 	
-	@Column(name = "account_no", nullable = false)
-	private Long accountNumber;
+	@Column(name = "notification_title")
+	private String notificationTitle;
 	
-	@Column(name = "account_type", nullable = false)
+	@Column(name = "notification_type")
 	@Enumerated(EnumType.STRING)
-	private AccountType accountType;
-	
-	@Column(name = "balance", nullable = false)
-	private Long balance;
-	
-	@Column(name = "transaction_limit")
-	private Long transactionLimit;
-	
-	@Column(name = "secure_word")
-	private String secureWord;
-	
-	@Column(name = "account_status")
-	@Enumerated(EnumType.STRING)
-	private AccountStatus accountStatus;
-	
-	@Column(name = "branch_no")
-	private Long branchNumber;
-	
-	@Column(name = "customer_national_code")
-	private Long customerNationalCode;
+	private NotificationType notificationType;
 	
 	@Column(name = "payment_type")
 	private String paymentType;
@@ -64,9 +46,27 @@ public class Account {
 	@Column(name = "payment_amount")
 	private Long paymentAmount;
 	
-	@Column(name = "payment_date")
+	@Column(name = "transaction_date")
 	@Temporal(TemporalType.TIMESTAMP)
-	private LocalDateTime paymentDate;
+	private LocalDateTime transactionDate;
+	
+	@Column(name = "account_no")
+	private Long accountNumber;
+	
+	@Column(name = "account_balance")
+	private Long accountBalance;
+	
+	@Column(name = "email")
+	@Where(clause = "notification_type = 'EMAIL' ")
+	private String email;
+	
+	@Column(name = "phone_no")
+	@Where(clause = "notification_type = 'SMS' ")
+	private String phoneNumber;
+	
+	@Column(name = "status")
+	@Enumerated(EnumType.STRING)
+	private NotificationStatus status;
 	
 	@Column(name = "create_date", nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
