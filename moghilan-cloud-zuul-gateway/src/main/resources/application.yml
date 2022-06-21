@@ -1,0 +1,26 @@
+server:
+  port: 8884
+eureka:
+  client:
+    service-url:
+      default-zone: ${EUREKA_URI:http://localhost:8761/eureka}
+    instance:
+      prefer-ip-address: true
+
+zuul:
+  ignoredServices: '*'
+  prefix: /api
+  routes:
+    account-microservice:
+      path: /accounts/**
+      serviceId: ACCOUNT-MICROSERVICE
+    customer-microservice:
+      path: /customers/**
+      serviceId: CUSTOMER-MICROSERVICE
+    payment-microservice:
+      path: /payments/**
+      serviceId: PAYMENT-MICROSERVICE
+    transaction-microservice:
+      serviceId: TRANSACTION-MICROSERVICE
+  host:
+    socket-timeout-millis: 30000
