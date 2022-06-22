@@ -23,5 +23,8 @@ zuul:
     customer-microservice:
       path: /customers/**
       serviceId: CUSTOMER-MICROSERVICE
+    transaction-microservice:
+      path: /customers/**
+      serviceId: TRANSACTION-MICROSERVICE
   host:
     socket-timeout-millis: 30000
