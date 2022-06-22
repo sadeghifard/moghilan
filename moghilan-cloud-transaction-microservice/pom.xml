@@ -12,7 +12,7 @@
 	<artifactId>moghilan-cloud-transaction-microservice</artifactId>
 	<version>0.0.1</version>
 	<name>moghilan-cloud-transaction-microservice</name>
-	<description>This is one of the banking application microservices that is called Transaction microservice</description>
+	<description>This is one of the banking management system, that is called Transaction service</description>
 	<properties>
 		<java.version>18</java.version>
 		<spring-cloud.version>2021.0.3</spring-cloud.version>
@@ -21,6 +21,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -35,8 +39,16 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-streams</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
 		</dependency>
 
 		<dependency>
@@ -68,6 +80,16 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-rabbit-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
