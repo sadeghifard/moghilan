@@ -38,7 +38,7 @@ public class PaymentController implements IPaymentController {
 	}
 
 	@Override
-	@GetMapping("/payment/{id}")
+	@GetMapping("/payment/i/{id}")
 	public ResponseEntity<Payment> getById(Long id) {
 		Payment existPayment = paymentService.getById(id);
 		if(existPayment != null) {
@@ -49,7 +49,7 @@ public class PaymentController implements IPaymentController {
 	}
 
 	@Override
-	@GetMapping("/payment/{paymentCode}")
+	@GetMapping("/payment/pc/{paymentCode}")
 	public ResponseEntity<Payment> getByPaymentCode(Long paymentCode) {
 		Payment existPayment = paymentService.getByPaymentCode(paymentCode);
 		if(existPayment != null) {
@@ -95,7 +95,7 @@ public class PaymentController implements IPaymentController {
 	}
 
 	@Override
-	@PutMapping("/payment/{id}")
+	@PutMapping("/payment/i/{id}")
 	public ResponseEntity<Payment> updateById(@RequestBody Payment payment, @PathVariable Long id) {
 		Payment existPayment = paymentService.updateById(payment, id);
 		if(existPayment != null) {
@@ -106,7 +106,7 @@ public class PaymentController implements IPaymentController {
 	}
 
 	@Override
-	@PutMapping("/payment/{paymentCode}")
+	@PutMapping("/payment/pc/{paymentCode}")
 	public ResponseEntity<Payment> updateByPaymentCode(@RequestBody Payment payment, @PathVariable Long paymentCode) {
 		Payment existPayment = paymentService.updateByPaymentCode(payment, paymentCode);
 		if(existPayment != null) {
@@ -124,14 +124,14 @@ public class PaymentController implements IPaymentController {
 	}
 
 	@Override
-	@DeleteMapping("/payment/{id}")
+	@DeleteMapping("/payment/i/{id}")
 	public ResponseEntity<String> deleteById(Long id) {
 		String message = paymentService.deleteById(id);
 		return new ResponseEntity<String>(message, HttpStatus.OK);
 	}
 
 	@Override
-	@DeleteMapping("/payment/{paymentCode}")
+	@DeleteMapping("/payment/pc/{paymentCode}")
 	public ResponseEntity<String> deleteByPaymentCode(Long paymentCode) {
 		String message = paymentService.deleteByPaymentCode(paymentCode);
 		return new ResponseEntity<String>(message, HttpStatus.OK);
