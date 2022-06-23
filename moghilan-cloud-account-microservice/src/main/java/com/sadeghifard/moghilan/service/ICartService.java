@@ -15,7 +15,7 @@ public interface ICartService {
 	Cart updateCart(Cart cart) throws ResourceNotAcceptableException;
 	Cart updateCartById(Cart cart, Long id) throws ResourceNotFoundException;
 	Cart updateCartByCartNumber(Cart cart, Long cartNumber) throws ResourceNotFoundException;
-	String deleteCart(Cart cart);
-	String deleteByCartNumber(Long cartNumber);
-	String deleteById(Long id);
+	String deleteCart(Cart cart) throws ResourceNotFoundException;
+	String deleteByCartNumber(Long cartNumber) throws ResourceNotFoundException;
+	String deleteById(Long id) throws ResourceNotFoundException;
 }

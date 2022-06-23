@@ -70,45 +70,33 @@ public class CustomerService implements ICustomerService{
 
 	@Override
 	public Customer updateById(Customer customer, Long id) {
-		try {
 			Customer existCustomer = getCustomerById(id);
 			if(existCustomer != null) {
 				customer.setModifyDate(LocalDateTime.now());
 				existCustomer = customerRepository.save(customer);
 			}
 			return existCustomer;
-		} catch (Exception e) {
-			throw new ResourceNotFoundException("Customer", "Customer ID", customer);
-		}
 	}
 	
 	@Override
 	public Customer updateByCustomerNumber(Customer customer, Long customerNumber) {
-		try {
-			Customer existCustomer = getByCustomerNumber(customerNumber);
-			if(existCustomer != null) {
-				customer.setModifyDate(LocalDateTime.now());
-				existCustomer = customerRepository.save(customer);
-			}
-			return existCustomer;
-		} catch (Exception e) {
-			throw new ResourceNotFoundException("Customer", "Customer Number", customer);
+		Customer existCustomer = getByCustomerNumber(customerNumber);
+		if(existCustomer != null) {
+			customer.setModifyDate(LocalDateTime.now());
+			existCustomer = customerRepository.save(customer);
 		}
+		return existCustomer;
 	}
 
 
 	@Override
 	public Customer updateByNationalCode(Customer customer, Long nationalCode) {
-		try {
-			Customer existCustomer = getByNationalCode(nationalCode);
-			if(existCustomer != null) {
-				customer.setModifyDate(LocalDateTime.now());
-				existCustomer = customerRepository.save(customer);
-			}
-		return existCustomer;
-		} catch (Exception e) {
-			throw new ResourceNotFoundException("Customer", "Customer Natinal Code", nationalCode);
+		Customer existCustomer = getByNationalCode(nationalCode);
+		if(existCustomer != null) {
+			customer.setModifyDate(LocalDateTime.now());
+			existCustomer = customerRepository.save(customer);
 		}
+		return existCustomer;
 	}
 	
 	@Override

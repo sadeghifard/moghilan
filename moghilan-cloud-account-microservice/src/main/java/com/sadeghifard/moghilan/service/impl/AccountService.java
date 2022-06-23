@@ -91,25 +91,37 @@ public class AccountService implements IAccountService {
 
 	@Override
 	public String deleteAccount(Account account) {
-		accountRepository.delete(account);
-		return "Account deleted successfully";
+		try {
+			accountRepository.delete(account);
+			return "Account deleted successfully";
+		} catch (Exception e) {
+			throw new ResourceNotFoundException("Account", "Delete Account", account);
+		}
 	}
 	
 	@Override
 	public String deleteByAccountNumber(Long accountNumber) {
 		Account existAccount = getAccountByNumber(accountNumber);
-		if(existAccount != null) {
-			accountRepository.deleteByAccountNumber(accountNumber);
+		try {
+			if(existAccount != null) {
+				accountRepository.deleteByAccountNumber(accountNumber);
+			}
+			return "Account deleted successfully by account number = " + accountNumber;
+		} catch (Exception e) {
+			throw new ResourceNotFoundException("Account", "Delete by Account Number", accountNumber);
 		}
-		return "Account deleted successfully by account number = " + accountNumber;
 	}
 
 	@Override
 	public String deleteById(Long id) {
-		Account existAccount = getAccountById(id);
-		if(existAccount != null) {
-			accountRepository.deleteById(id);
+		try {
+			Account existAccount = getAccountById(id);
+			if(existAccount != null) {
+				accountRepository.deleteById(id);
+			}
+			return "Account deleted successfully by account ID = "+ id;
+		} catch (Exception e) {
+			throw new ResourceNotFoundException("Account", "Delete by Account ID", id);
 		}
-		return "Account deleted successfully by account ID = "+ id;
 	}
 }

@@ -14,7 +14,7 @@ public interface IAccountService {
 	Account updateAccount(Account account) throws ResourceNotAcceptableException;
 	Account updateByAccountNumber(Account account, Long accountNumber) throws ResourceNotFoundException;
 	Account updateById(Account account, Long id) throws ResourceNotFoundException;
-	String deleteAccount(Account account);
-	String deleteByAccountNumber(Long accountNumber);
-	String deleteById(Long id);
+	String deleteAccount(Account account) throws ResourceNotFoundException;
+	String deleteByAccountNumber(Long accountNumber) throws ResourceNotFoundException;
+	String deleteById(Long id) throws ResourceNotFoundException;
 }
