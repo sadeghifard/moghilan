@@ -38,7 +38,7 @@ public class CustomerController implements ICustomerController{
 	}
 
 	@Override
-	@GetMapping("/customer/{id}")
+	@GetMapping("/customer/i/{id}")
 	public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
 		Customer customer = customerService.getCustomerById(id);
 		if(customer != null) {
@@ -49,7 +49,7 @@ public class CustomerController implements ICustomerController{
 	}
 
 	@Override
-	@GetMapping("/customer/{customerNumber")
+	@GetMapping("/customer/cn/{customerNumber")
 	public ResponseEntity<Customer> getByCustomerNumber(@PathVariable Long customerNumber) {
 		Customer customer = customerService.getByCustomerNumber(customerNumber);
 		if(customer != null) {
@@ -60,7 +60,7 @@ public class CustomerController implements ICustomerController{
 	}
 
 	@Override
-	@GetMapping("/customer/{nationalCode}")
+	@GetMapping("/customer/nc/{nationalCode}")
 	public ResponseEntity<Customer> getByNationalCode(@PathVariable Long nationalCode) {
 		Customer customer = customerService.getByNationalCode(nationalCode);
 		if(customer != null) {
@@ -93,7 +93,7 @@ public class CustomerController implements ICustomerController{
 	}
 	
 	@Override
-	@PutMapping("/customer/{id}")
+	@PutMapping("/customer/i/{id}")
 	public ResponseEntity<Customer> updateById(@RequestBody Customer customer, @PathVariable Long id) {
 		Customer existCustomer = customerService.updateById(customer, id);
 		if(existCustomer != null) {
@@ -104,7 +104,7 @@ public class CustomerController implements ICustomerController{
 	}
 
 	@Override
-	@PutMapping("/customer/{customerNumber}")
+	@PutMapping("/customer/cn/{customerNumber}")
 	public ResponseEntity<Customer> updateByCustomerNumber(@RequestBody Customer customer, @PathVariable Long customerNumber) {
 		Customer existCustomer = customerService.updateByCustomerNumber(customer, customerNumber);
 		if(existCustomer != null) {
@@ -115,7 +115,7 @@ public class CustomerController implements ICustomerController{
 	}
 
 	@Override
-	@PutMapping("/customer/{nationalCode}")
+	@PutMapping("/customer/nc/{nationalCode}")
 	public ResponseEntity<Customer> updateByNationalCode(Customer customer, Long nationalCode) {
 		Customer existCustomer = customerService.updateByNationalCode(customer, nationalCode);
 		if(existCustomer != null) {
@@ -134,21 +134,21 @@ public class CustomerController implements ICustomerController{
 	}
 
 	@Override
-	@DeleteMapping("/account/{customerNumber}")
+	@DeleteMapping("/account/cn/{customerNumber}")
 	public ResponseEntity<String> deleteByCustomerNumber(@PathVariable Long customerNumber) {
 		String message = customerService.deleteByCustomerNumber(customerNumber);
 		return ResponseEntity.ok(message);
 	}
 
 	@Override
-	@DeleteMapping("/account/{id}")
+	@DeleteMapping("/account/i/{id}")
 	public ResponseEntity<String> deleteById(@PathVariable Long id) {
 		String message = customerService.deleteById(id);
 		return ResponseEntity.ok(message);
 	}
 
 	@Override
-	@DeleteMapping("/account/{nationalCode}")
+	@DeleteMapping("/account/nc/{nationalCode}")
 	public ResponseEntity<String> deleteByNationalCode(Long nationalCode) {
 		String message = customerService.deleteByNationalCode(nationalCode);
 		return ResponseEntity.ok(message);
