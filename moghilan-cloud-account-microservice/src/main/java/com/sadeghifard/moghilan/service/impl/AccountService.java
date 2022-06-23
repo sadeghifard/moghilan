@@ -1,13 +1,13 @@
 package com.sadeghifard.moghilan.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-import com.sadeghifard.moghilan.exception.ResourceException;
+import com.sadeghifard.moghilan.exception.ResourceAlreadyReportedException;
+import com.sadeghifard.moghilan.exception.ResourceNotAcceptableException;
+import com.sadeghifard.moghilan.exception.ResourceNotFoundException;
 import com.sadeghifard.moghilan.model.Account;
 import com.sadeghifard.moghilan.repository.AccountRepository;
 import com.sadeghifard.moghilan.service.IAccountService;
@@ -26,26 +26,26 @@ public class AccountService implements IAccountService {
 		try {
 			return accountRepository.findAll();
 		} catch (Exception e) {
-			throw new ResourceException("Account", "Get All", null);
+			throw new ResourceNotFoundException("Account", "Get All", null);
 		}
 	}
 	
 	@Override
 	public Account getAccountById(Long id) {
 		return accountRepository.findById(id)
-				.orElseThrow(() -> new ResourceException("Account", "Account ID" , id));
+				.orElseThrow(() -> new ResourceNotFoundException("Account", "Account ID" , id));
 	}
 	
 	@Override
 	public Account getAccountByNumber(Long accountNumber) {
 		return accountRepository.findByAccountNumber(accountNumber)
-				.orElseThrow(() -> new ResourceException("Account", "Account Number" , accountNumber));
+				.orElseThrow(() -> new ResourceNotFoundException("Account", "Account Number" , accountNumber));
 	}
 	
 	@Override
 	public Iterable<Account> getAccountsByCustomerNationalCode(Long customerNationalCode){
 		return accountRepository.findByCustomerNationalCode(customerNationalCode)
-				.orElseThrow(() -> new ResourceException("Account", "Customer National Code", customerNationalCode));
+				.orElseThrow(() -> new ResourceNotFoundException("Account", "Customer National Code", customerNationalCode));
 	}
 	
 	@Override
@@ -54,7 +54,7 @@ public class AccountService implements IAccountService {
 			account.setCreateDate(LocalDateTime.now());
 			return accountRepository.save(account);
 		} catch (Exception e) {
-			throw new ResourceException("Account", "save Account", account);
+			throw new ResourceAlreadyReportedException("Account", "save Account", account);
 		}
 	}
 	
@@ -65,7 +65,7 @@ public class AccountService implements IAccountService {
 			account.setModifyDate(LocalDateTime.now());
 			return accountRepository.save(account);
 		} catch (Exception e) {
-			throw new ResourceException("Account", "Update Account", account);
+			throw new ResourceNotAcceptableException("Account", "Update Account", account);
 		}
 	}
 
