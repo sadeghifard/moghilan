@@ -8,8 +8,6 @@ import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 
-import reactor.netty.http.server.HttpServerRequest;
-
 public class PreFilter extends ZuulFilter {
 
 	@Override
