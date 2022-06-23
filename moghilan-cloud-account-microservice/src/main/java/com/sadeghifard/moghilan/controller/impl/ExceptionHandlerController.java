@@ -2,6 +2,7 @@ package com.sadeghifard.moghilan.controller.impl;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.ResourceClosedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -76,6 +77,19 @@ public class ExceptionHandlerController implements IExceptionHandlerController{
 	public ErrorMessage resourseBadRequestException(ResourceBadRequestException ex, WebRequest request) {
 		ErrorMessage message = new ErrorMessage(
 		        HttpStatus.BAD_REQUEST.value(),
+		        LocalDateTime.now(),
+		        ex.getMessage(),
+		        request.getDescription(false));
+
+		return message;
+	}
+
+	@Override
+	@ExceptionHandler(ResourceClosedException.class)
+	@ResponseStatus(value = HttpStatus.REQUEST_TIMEOUT)
+	public ErrorMessage resourseClosedException(ResourceClosedException ex, WebRequest request) {
+		ErrorMessage message = new ErrorMessage(
+		        HttpStatus.REQUEST_TIMEOUT.value(),
 		        LocalDateTime.now(),
 		        ex.getMessage(),
 		        request.getDescription(false));
