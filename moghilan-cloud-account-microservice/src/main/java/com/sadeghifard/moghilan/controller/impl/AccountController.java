@@ -35,7 +35,7 @@ public class AccountController implements IAccountController {
 		}
 	}
 	
-	@GetMapping("/account/{id}")
+	@GetMapping("/account/i/{id}")
 	public ResponseEntity<Account> getAccountById (@PathVariable Long id){
 		Account account = accountService.getAccountById(id);
 		if(account != null) {
@@ -45,7 +45,7 @@ public class AccountController implements IAccountController {
 		}
 	}
 	
-	@GetMapping("/account/{accountNum}")
+	@GetMapping("/account/ac/{accountNum}")
 	public ResponseEntity<Account> getAccountByNumber(@PathVariable Long accountNumber) {
 		Account account = accountService.getAccountByNumber(accountNumber);
 		if(account != null) {
@@ -55,7 +55,7 @@ public class AccountController implements IAccountController {
 		}
 	}
 	
-	@GetMapping("/account/{cusNationalCod}")
+	@GetMapping("/account/nc/{cusNationalCod}")
 	public ResponseEntity<Iterable<Account>> getAccountsByCustomerNationalCode (@PathVariable Long cusNationalCod){
 		List<Account> accounts = (List<Account>) accountService.getAccountsByCustomerNationalCode(cusNationalCod);
 		accounts = accounts.stream().filter(c -> c != null).toList();
@@ -85,7 +85,7 @@ public class AccountController implements IAccountController {
 	}
 
 	@Override
-	@PutMapping("/account/{accountNumber}")
+	@PutMapping("/account/an/{accountNumber}")
 	public ResponseEntity<Account> updateByAccountNumber(@RequestBody Account account, @PathVariable Long accountNumber) {
 		Account existAccount = accountService.updateByAccountNumber(account, accountNumber);
 		if(existAccount != null ) {
@@ -96,7 +96,7 @@ public class AccountController implements IAccountController {
 	}
 	
 	
-	@PutMapping("/account/{id}")
+	@PutMapping("/account/i/{id}")
 	public ResponseEntity<Account> updateById (@RequestBody Account account, @PathVariable Long id){
 		Account existAccount = accountService.updateById(account, id);
 		if(existAccount != null ) {
@@ -112,13 +112,13 @@ public class AccountController implements IAccountController {
 		return ResponseEntity.ok(message);
 	}
 	
-	@DeleteMapping("/account/{accountNum}")
+	@DeleteMapping("/account/an/{accountNum}")
 	public ResponseEntity<String> deleteByAccountNumber(@PathVariable Long accountNum){
 		String message = accountService.deleteByAccountNumber(accountNum);
 		return ResponseEntity.ok(message);
 	}
 	
-	@DeleteMapping("/account/{id}")
+	@DeleteMapping("/account/i/{id}")
 	public ResponseEntity<String> deleteById(@PathVariable Long id){
 		String message = accountService.deleteById(id);
 		return ResponseEntity.ok(message);

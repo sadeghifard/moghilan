@@ -14,7 +14,9 @@ OpenFeign (HTTP Client Handler),
 Hystrix (Circuit Breakers), 
 Spring Boot 2.7.0, 
 Spring Security 5, 
-Spring Data JPA, 
+Spring Data JPA,
+Spring Web,
+Spring Webflux, 
 RESTfull, 
 JSON, 
 Lombok, 
@@ -24,3 +26,6 @@ Git,
 Postman,
 PostgreSQL RDMBS, 
 MySQL RDBMS.
+
+Moghilan banking management system is a Spring Cloud by Kafka microservices streaming for a Spring Boot high-scale enterprise application using Kubernetes platform. 
+Moghilan uses two various RDBMSs, that is, PostgreSQL and MySQL. In Moghilan each microservice connect to the individual schema on different databases.
