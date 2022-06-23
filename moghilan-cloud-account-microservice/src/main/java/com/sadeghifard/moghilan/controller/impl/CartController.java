@@ -39,7 +39,7 @@ public class CartController implements ICartController {
 	}
 	
 	@Override
-	@GetMapping("/cart/{id}")
+	@GetMapping("/cart/i/{id}")
 	public ResponseEntity<Cart> getCartById (@PathVariable Long id){
 		Cart existCart = cartService.getCartById(id);
 		if(existCart != null) {
@@ -50,7 +50,7 @@ public class CartController implements ICartController {
 	}
 	
 	@Override
-	@GetMapping("/cart/{cartNumber}")
+	@GetMapping("/cart/cn/{cartNumber}")
 	public ResponseEntity<Cart> getCartByCartNumber(@PathVariable Long cartNumber) {
 		Cart existCart = cartService.getCartByCartNumber(cartNumber);
 		if(existCart != null) {
@@ -83,7 +83,7 @@ public class CartController implements ICartController {
 	}
 
 	@Override
-	@PutMapping("/cart/{id}")
+	@PutMapping("/cart/i/{id}")
 	public ResponseEntity<Cart> updateCartById(Cart cart, Long id) {
 			Cart existCart = cartService.updateCartById(cart, id);
 			if(existCart != null) {
@@ -94,7 +94,7 @@ public class CartController implements ICartController {
 	}
 
 	@Override
-	@PutMapping("/cart/{cartNumber}")
+	@PutMapping("/cart/cn/{cartNumber}")
 	public ResponseEntity<Cart> updateCartByCartNumber(Cart cart, Long cartNumber) {
 			Cart existCart = cartService.updateCartById(cart, cartNumber);
 			if(existCart != null) {
@@ -112,14 +112,14 @@ public class CartController implements ICartController {
 	}
 	
 	@Override
-	@DeleteMapping("/cart/{cartNumber}")
+	@DeleteMapping("/cart/cn/{cartNumber}")
 	public ResponseEntity<String> deleteByCartNumber(@PathVariable Long cartNumber){
 		String massage = cartService.deleteByCartNumber(cartNumber);
 		return new ResponseEntity<String>(massage, HttpStatus.OK);
 	}
 	
 	@Override
-	@DeleteMapping("/cart/{id}")
+	@DeleteMapping("/cart/i/{id}")
 	public ResponseEntity<String> deleteById(@PathVariable Long id){
 		String massage = cartService.deleteById(id);
 		return new ResponseEntity<String>(massage, HttpStatus.OK);
