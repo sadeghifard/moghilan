@@ -7,7 +7,9 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.sadeghifard.moghilan.enums.PaymentType;
-import com.sadeghifard.moghilan.exception.ResourceException;
+import com.sadeghifard.moghilan.exception.ResourceAlreadyReportedException;
+import com.sadeghifard.moghilan.exception.ResourceNotAcceptableException;
+import com.sadeghifard.moghilan.exception.ResourceNotFoundException;
 import com.sadeghifard.moghilan.model.Payment;
 import com.sadeghifard.moghilan.repository.PaymentRepository;
 import com.sadeghifard.moghilan.service.IPaymentService;
@@ -26,26 +28,26 @@ public class PaymentService implements IPaymentService {
 		try {
 			return paymentRepository.findAll();
 		} catch (Exception e) {
-			throw new ResourceException("Payment", "Get All", null);
+			throw new ResourceNotFoundException("Payment", "Get All", null);
 		}
 	}
 
 	@Override
 	public Payment getById(Long id) {
 		return paymentRepository.findById(id)
-				.orElseThrow(() -> new ResourceException("Payment", "Payment ID", id));
+				.orElseThrow(() -> new ResourceNotFoundException("Payment", "Payment ID", id));
 	}
 
 	@Override
 	public Payment getByPaymentCode(Long paymentCode) {
 		return paymentRepository.findByPaymentCode(paymentCode)
-				.orElseThrow(() -> new ResourceException("Payment", "Payment Code", paymentCode));
+				.orElseThrow(() -> new ResourceNotFoundException("Payment", "Payment Code", paymentCode));
 	}
 
 	@Override
 	public Iterable<Payment> getByPaymentType(PaymentType paymentType) {
 		return paymentRepository.findByPaymentType(paymentType)
-				.orElseThrow(() -> new ResourceException("Payment", "Payment Type", paymentType));
+				.orElseThrow(() -> new ResourceNotFoundException("Payment", "Payment Type", paymentType));
 	}
 
 	@Override
@@ -54,7 +56,7 @@ public class PaymentService implements IPaymentService {
 			payment.setModifyDate(LocalDateTime.now());
 			return paymentRepository.save(payment);
 		} catch (Exception e) {
-			throw new ResourceException("Payment", "Save Payment", payment);
+			throw new ResourceAlreadyReportedException("Payment", "Payment", payment);
 		}
 	}
 
@@ -64,7 +66,7 @@ public class PaymentService implements IPaymentService {
 			payment.setModifyDate(LocalDateTime.now());
 			return paymentRepository.save(payment);
 		} catch (Exception e) {
-			throw new ResourceException("Payment", "Update Payment", payment);
+			throw new ResourceNotAcceptableException("Payment", "Payment", payment);
 		}
 	}
 
@@ -90,14 +92,22 @@ public class PaymentService implements IPaymentService {
 
 	@Override
 	public String deletePayment(Payment payment) {
-		paymentRepository.delete(payment);
-		return "Payment deleted successfully";
+		try {
+			paymentRepository.delete(payment);
+			return "Payment deleted successfully";
+		} catch (Exception e) {
+			throw new ResourceNotFoundException("Payment", "Payment", payment);
+		}
 	}
 
 	@Override
 	public String deleteById(Long id) {
-		paymentRepository.deleteById(id);
-		return "Payment deleted successfully with ID = " + id;
+		try {
+			paymentRepository.deleteById(id);
+			return "Payment deleted successfully with ID = " + id;
+		} catch (Exception e) {
+			throw new ResourceNotFoundException("Payment", "ID", id);
+		}
 	}
 
 	@Override
