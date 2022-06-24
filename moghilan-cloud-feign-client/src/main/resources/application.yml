@@ -1,7 +1,3 @@
-spring:
-  application:
-    name: moghilan-cloud-feign-client
-
 server:
   port: 8883
   
@@ -11,3 +7,19 @@ eureka:
       default-zone: ${EUREKA_URI:http://localhost:8761/eureka}
   instance:
     prefer-ip-address: true
+
+feign:
+  client:
+    config:
+      feignName:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
+        decode404: false
+        
+logging:
+  level:
+    project:
+      user:
+        UserClient: full
+    
