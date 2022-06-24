@@ -24,22 +24,22 @@ public class ExceptionHandlerController implements IExceptionHandlerController{
 	  @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 	  public ErrorMessage globalExceptionHandler(Exception ex, WebRequest request) {
 	    ErrorMessage message = new ErrorMessage(
-								        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-								        LocalDateTime.now(),
-								        ex.getMessage(),
-								        request.getDescription(false));
+		        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+		        LocalDateTime.now(),
+		        ex.getMessage(),
+		        request.getDescription(false));
 	    return message;
 	  }
 	  
 	  @Override
-	  @ExceptionHandler(ResourceNotAcceptableException.class)
+	  @ExceptionHandler(ResourceNotFoundException.class)
 	  @ResponseStatus(value = HttpStatus.NOT_FOUND)
 	  public ErrorMessage resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
 	    ErrorMessage message = new ErrorMessage(
-								        HttpStatus.NOT_FOUND.value(),
-								        LocalDateTime.now(),
-								        ex.getMessage(),
-								        request.getDescription(false));
+		        HttpStatus.NOT_FOUND.value(),
+		        LocalDateTime.now(),
+		        ex.getMessage(),
+		        request.getDescription(false));
 	    
 	    return message;
 	  }
@@ -49,11 +49,11 @@ public class ExceptionHandlerController implements IExceptionHandlerController{
 	@ResponseStatus(value = HttpStatus.ALREADY_REPORTED)
 	public ErrorMessage resourseAlreadyReportedException(ResourceAlreadyReportedException ex, WebRequest request) {
 		ErrorMessage message = new ErrorMessage(
-										HttpStatus.ALREADY_REPORTED.value(),
-										LocalDateTime.now(),
-										ex.getMessage(),
-										request.getDescription(false)
-										);
+				HttpStatus.ALREADY_REPORTED.value(),
+				LocalDateTime.now(),
+				ex.getMessage(),
+				request.getDescription(false)
+				);
 		return message;
 	}
 
@@ -62,10 +62,10 @@ public class ExceptionHandlerController implements IExceptionHandlerController{
 	@ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
 	public ErrorMessage resourseNotAcceptableException(ResourceNotAcceptableException ex, WebRequest request) {
 		ErrorMessage message = new ErrorMessage(
-								        HttpStatus.NOT_ACCEPTABLE.value(),
-								        LocalDateTime.now(),
-								        ex.getMessage(),
-								        request.getDescription(false));
+		        HttpStatus.NOT_ACCEPTABLE.value(),
+		        LocalDateTime.now(),
+		        ex.getMessage(),
+		        request.getDescription(false));
 
 		return message;
 	}
