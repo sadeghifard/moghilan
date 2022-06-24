@@ -31,13 +31,13 @@ public interface WebAccountService {
 	@PostMapping(value = "/account")
 	Mono<Account> saveAccount(@RequestBody Publisher<Account> account);
 	
-	@PutMapping(value = "/account", consumes = "application/json")
+	@PutMapping(value = "/account")
 	Mono<Account> updateAccount(@RequestBody Publisher<Account> account);
 	
-	@PutMapping(value = "/account/an/{accountNumber}", consumes = "application/json")
+	@PutMapping(value = "/account/an/{accountNumber}")
 	Mono<Account> updateByAccountNumber(@RequestBody Publisher<Account> account, @PathVariable Long accountNumber);
 	
-	@PutMapping(value = "/account/i/{id}", consumes = "application/json")
+	@PutMapping(value = "/account/i/{id}")
 	Mono<Account> updateById(@RequestBody Publisher<Account> account, @PathVariable Long id);
 	
 	@DeleteMapping("/account")
