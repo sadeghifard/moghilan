@@ -17,7 +17,7 @@ public class EurekaSecurityConfiguration {
 	}
 	 @Bean
 	 public WebSecurityCustomizer webSecurityCustomizer() {
-	        return (web) -> web.ignoring().antMatchers("/eureka/**");
+	        return (web) -> web.ignoring().antMatchers("/eureka_server/**");
 	 }
 
 }

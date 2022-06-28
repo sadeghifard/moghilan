@@ -10,7 +10,7 @@ eureka:
     registerWithEureka: false
     fetchRegistry: false
     service-url:
-      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka_server/
   server:
     enable-self-preservation: false
     evication-interval-timer-in-ms: 100000
