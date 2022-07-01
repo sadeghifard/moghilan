@@ -1,13 +1,10 @@
-spring:
-  application:
-    name: moghilan-cloud-eureka-client-discovery-service
 server:
   port: 8881
 eureka:
   client:
     service-url:
     #  defaultZone: http://peer-0-server:9000/eureka, http://peer-1-server.com:9001/eureka, http://peer-2-server.com:9002/eureka, http://peer-3-server.com:8761/eureka
-       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+       defaultZone: ${EUREKA_URI:http://localhost:8761/_discovery_server}
     instance:
       instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
       preferIpAddress: true

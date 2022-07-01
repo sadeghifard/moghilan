@@ -1,11 +1,11 @@
 spring:
   application:
-    name: moghilan-cloud-ribbon-client-load-balancer
+    name: ribbon-load-balancer
 server:
   port: 8882
 eureka:
   client:
     service-url:
-      default-zone: ${EUREKA_URI:http://localhost:8761/eureka}
+      default-zone: ${EUREKA_URI:http://localhost:8761/_discovery_server}
   instance:
     prefer-ip-address: true
