@@ -1,3 +1,5 @@
+server.forward-headers-strategy: framework
+
 server:
   port: 10004
 eureka:
@@ -7,4 +9,104 @@ eureka:
     instance:
       prefer-ip-address: true
 
+spring.cloud.stream:
+  default-binder: kafka
+  bindings:
+    account-microservice-in-0:
+      destination: accounts
+      content-type: application/json
+      consumer:
+      group: moghilanGroup
+    account-microservice-out-0:
+      destination: accounts
+      content-type: application/json
+      producer:
+      group: moghilanGroup
+    customer-microservice-in-0:
+      destination: customers
+      content-type: application/json
+      consumer:
+      group: moghilanGroup
+    customer-microservice-out-0:
+      destination: customers
+      content-type: application/json
+      producer:
+      group: moghilanGroup
+    payment-microservice-in-0:
+      destination: payments
+      content-type: application/json
+      consumer:
+      group: auditGroup
+    payment-microservice-out-0:
+      destination: payments
+      content-type: application/json
+      producer:
+      group: moghilanGroup
 
+spring.cloud.stream.kafka.binder:
+  brokers: 
+  - localhost:9092
+
+management.endpoint.health.show-details: "ALWAYS"
+management.endpoints.web.exposure.include: "*"
+
+---
+spring.config.activate.on-profile: docker
+
+server.port: 5050
+
+app:
+  auth-server: localhost
+  eureka-server: localhost
+  config-server: localhost
+
+spring:
+  kafka:
+    bootstrap-servers:
+    - localhost:9092
+
+spring.cloud.stream.kafka.binder.brokers: kafka
+
+---
+spring.config.activate.on-profile: streaming_partitioned
+
+spring.cloud.stream.bindings.account-microservice-in-0.consumer:
+  partition-key-expression: headers['partitionKey']
+  partition-count: 2
+  
+spring.cloud.stream.bindings.account-microservice-out-0.producer:
+  partition-key-expression: headers['partitionKey']
+  partition-count: 2
+
+spring.cloud.stream.bindings.customer-microservice-in-0.consumer:
+  partition-key-expression: headers['partitionKey']
+  partition-count: 2
+  
+spring.cloud.stream.bindings.customer-microservice-out-0.producer:
+  partition-key-expression: headers['partitionKey']
+  partition-count: 2
+
+spring.cloud.stream.bindings.payment-microservice-in-0.producer:
+  partition-key-expression: headers['partitionKey']
+  partition-count: 2
+  
+spring.cloud.stream.bindings.payment-microservice-out-0.producer:
+  partition-key-expression: headers['partitionKey']
+  partition-count: 2
+
+---
+
+spring.config.activate.on-profile: kafka
+
+management.health.binders.enabled: true
+spring:
+  cloud:
+    stream:
+      default-binder: kafka
+      kafka:
+        streams:
+          binder:
+            replication-factor: 1
+  kafka:
+    bootstrap-servers:
+    - localhost:9092
