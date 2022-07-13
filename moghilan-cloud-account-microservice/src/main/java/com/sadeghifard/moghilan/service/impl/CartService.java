@@ -1,13 +1,14 @@
 package com.sadeghifard.moghilan.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-import com.sadeghifard.moghilan.exception.ResourceException;
+import com.sadeghifard.moghilan.exception.ResourceAlreadyReportedException;
+import com.sadeghifard.moghilan.exception.ResourceNotAcceptableException;
+import com.sadeghifard.moghilan.exception.ResourceNotFoundException;
 import com.sadeghifard.moghilan.model.Cart;
 import com.sadeghifard.moghilan.repository.CartRepository;
 import com.sadeghifard.moghilan.service.ICartService;
@@ -26,20 +27,20 @@ public class CartService implements ICartService{
 		try {
 			return cartRepository.findAll();
 		} catch (Exception e) {
-			throw new ResourceException("Cart", "Get All", null);
+			throw new ResourceNotFoundException("Cart", "Get All", null);
 		}
 	}
 
 	@Override
 	public Cart getCartById(Long id) {
 		return cartRepository.findById(id)
-				.orElseThrow(()-> new ResourceException("Cart","Cart ID", id));
+				.orElseThrow(()-> new ResourceNotFoundException("Cart","Cart ID = ", id));
 	}
 
 	@Override
 	public Cart getCartByCartNumber(Long cartNumber) {
 		return cartRepository.findByCartNumber(cartNumber)
-				.orElseThrow(()-> new ResourceException("Cart","Cart Number", cartNumber));
+				.orElseThrow(()-> new ResourceNotFoundException("Cart","Cart Number = ", cartNumber));
 	}
 	
 	@Override
@@ -48,7 +49,7 @@ public class CartService implements ICartService{
 			cart.setCreateDate(LocalDateTime.now());
 			return cartRepository.save(cart);
 		}catch (Exception e) {
-			throw new ResourceException("Cart", "Save Cart", cart);
+			throw new ResourceAlreadyReportedException("Cart", "Save Cart: ", cart);
 		}
 	}
 
@@ -58,7 +59,7 @@ public class CartService implements ICartService{
 			cart.setModifyDate(LocalDateTime.now());
 			return cartRepository.save(cart);
 		} catch (Exception e) {
-			throw new ResourceException("Cart", "Update Cart", cart);
+			throw new ResourceNotAcceptableException("Cart", "Update Cart: ", cart);
 		}
 	}
 
@@ -84,25 +85,37 @@ public class CartService implements ICartService{
 	
 	@Override
 	public String deleteCart(Cart cart) {
-		cartRepository.delete(cart);
-		return "Cart deleted successfully";
+		try {
+			cartRepository.delete(cart);
+			return "Cart deleted successfully";
+		} catch (Exception e) {
+			throw new ResourceNotFoundException("Cart", "Delete Cart: ", cart);
+		}
 	}
 
 	@Override
 	public String deleteByCartNumber(Long cartNumber) {
-		Cart existCart = getCartByCartNumber(cartNumber);
-		if(existCart != null) {
-			cartRepository.deleteByCartNumber(cartNumber);
+		try {
+			Cart existCart = getCartByCartNumber(cartNumber);
+			if(existCart != null) {
+				cartRepository.deleteByCartNumber(cartNumber);
+			}
+			return "Cart deleted successfully by Cart number = " + cartNumber;
+		} catch (Exception e) {
+			throw new ResourceNotFoundException("Cart", "Delete by Cart Number = ", cartNumber);
 		}
-		return "Cart deleted successfully by Cart number = " + cartNumber;
 	}
 
 	@Override
 	public String deleteById(Long id) {
-		Cart existCart = getCartById(id);
-		if(existCart != null) {
-			cartRepository.deleteById(id);
+		try {
+			Cart existCart = getCartById(id);
+			if(existCart != null) {
+				cartRepository.deleteById(id);
+			}
+			return "Cart deleted successfully by Cart ID = " + id;
+		} catch (Exception e) {
+			throw new ResourceNotFoundException("Cart", "Delete by Cart ID = ", id);
 		}
-		return "Cart deleted successfully by Cart ID = " + id;
 	}
 }

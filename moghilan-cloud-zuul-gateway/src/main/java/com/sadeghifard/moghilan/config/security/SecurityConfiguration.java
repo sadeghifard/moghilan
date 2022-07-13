@@ -21,12 +21,15 @@ import lombok.AllArgsConstructor;
 public class SecurityConfiguration {
 	
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf()
 			.disable()
 			.authorizeRequests()
 			.antMatchers("/**")
-			.permitAll();
+			.permitAll()
+			.and()
+			.httpBasic()
+			.disable();
 		http.sessionManagement()
 			.sessionFixation()
 			.migrateSession()
@@ -35,14 +38,15 @@ public class SecurityConfiguration {
 	}
 	
 	@Bean
-	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 		http.csrf()
 			.disable()
 			.authorizeExchange()
 			.pathMatchers("/**")
 			.permitAll()
 			.and()
-			.httpBasic();
+			.httpBasic()
+			.disable();
 		return http.build();
 	}
 
