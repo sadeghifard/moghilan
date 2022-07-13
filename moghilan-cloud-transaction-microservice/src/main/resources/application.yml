@@ -165,13 +165,19 @@ spring:
             #TO DO: dlqProducerProperties.configuration.key.serializer
             #TO DO: dlqProducerProperties.configuration.value.serializer
           producer-properties:
-            sync: true
+            closed-timeout: 10
             enable-dlq: true
-            dlq-name: errors            
+            dlq-name: errors  
           transaction:
             producer:
+              message-key-expression: headers.id
               partition-key-expression: headers['partitionKey']
+              sync: true
               error-channel-enabled: true
+              batch-timeout: 10
+              configuration:
+                key-serializer: org.apache.kafka.common.serialization.StringSerializer
+                value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
           replication-factor: 1
           brokers:
           - localhost:9092
@@ -185,9 +191,9 @@ spring:
       security:
         protocol: SSL
       ssl:
-        protocol: TLSv.3.0   
+        protocol: TLSv.3.0
       #properties:
-         #TO DO: transaction-manager: myCustomTransactionManager    
+         #TO DO: transaction-manager: myCustomTransactionManager using ChainedKafkaTransactionManager    
     producer:
       security:
         protocol: SSL
