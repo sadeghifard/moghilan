@@ -9,39 +9,110 @@ eureka:
     instance:
       prefer-ip-address: true
 
-spring.cloud.stream:
-  default-binder: kafka
-  bindings:
-    account-microservice-in-0:
-      destination: accounts
-      content-type: application/json
-      consumer:
-      group: moghilanGroup
-    account-microservice-out-0:
-      destination: accounts
-      content-type: application/json
-      producer:
-      group: moghilanGroup
-    customer-microservice-in-0:
-      destination: customers
-      content-type: application/json
-      consumer:
-      group: moghilanGroup
-    customer-microservice-out-0:
-      destination: customers
-      content-type: application/json
-      producer:
-      group: moghilanGroup
-    payment-microservice-in-0:
-      destination: payments
-      content-type: application/json
-      consumer:
-      group: auditGroup
-    payment-microservice-out-0:
-      destination: payments
-      content-type: application/json
-      producer:
-      group: moghilanGroup
+spring:
+  cloud:
+    stream:
+      instance-count: 2
+      bindings:
+        account-service-in-0:
+          binder: account-broker
+          destination: accounts
+          content-type: application/json
+          group: account-group
+          consumer:
+            auto-startup: true
+            batch-mode: true
+            partitioned: true
+            header-mode: headers
+            instance-count: 2
+            instance-index: 1
+            concurrency: 2
+        account-service-out-0:
+          binder: account-broker
+          destination: accounts
+          content-type: application/json
+          group: account-group
+          producer:
+            header-mode: headers
+            auto-startup: true
+            partitioned: true
+            partition-count: 4
+            partition-key-expression: headers['partitionKey']
+            required-groups: account-group, customer-group, payment-group
+            error-channel-enabled: true
+        customer-service-in-0:
+          binder: customer-broker
+          destination: customers
+          content-type: application/json
+          group: customer-group
+          consumer:
+            auto-startup: true
+            batch-mode: true
+            partitioned: true
+            header-mode: headers
+            instance-count: 2
+            instance-index: 1
+            concurrency: 2
+        customer-service-out-0:
+          binder: customer-broker
+          destination: customers
+          content-type: application/json
+          group: customer-group
+          producer:
+            header-mode: headers
+            auto-startup: true
+            partitioned: true
+            partition-count: 4
+            partition-key-expression: headers['partitionKey']
+            required-groups: account-group, customer-group, payment-group
+            error-channel-enabled: true
+        payment-service-in-0:
+          binder: payment-broker
+          destination: payments
+          content-type: application/json
+          group: payment-group
+          consumer:
+            auto-startup: true
+            batch-mode: true
+            partitioned: true
+            header-mode: headers
+            instance-count: 2
+            instance-index: 1
+            concurrency: 2 
+        payment-service-out-0:
+          binder: payment-broker
+          destination: payments
+          content-type: application/json
+          group: payment-group
+          producer:
+            header-mode: headers
+            auto-startup: true
+            partitioned: true
+            partition-count: 4
+            partition-key-expression: headers['partitionKey']
+            required-groups: account-group, customer-group, payment-group
+            error-channel-enabled: true
+      binders:
+        account-broker:
+          type: kafka
+          environment:
+            spring:
+              kafka:
+                host: localhost:9092  
+        customer-broker:
+          type: kafka
+          environment:
+            spring:
+              kafka:
+                host: localhost:9092 
+        payment-broker:
+          type: kafka
+          environment:
+            spring:
+              kafka:
+                host: localhost:9092 
+
+# spring.cloud.stream.bindings.func-out-0.producer.partitionKeyExtractorName=customPartitionKeyExtractor
 
 spring.cloud.stream.kafka.binder:
   brokers: 
@@ -61,38 +132,14 @@ app:
   config-server: localhost
 
 spring:
+  cloud:
+    stream:
+      kafka:
+        binder:
+         brokers: account-broker, customer-broker, payment-broker
   kafka:
     bootstrap-servers:
     - localhost:9092
-
-spring.cloud.stream.kafka.binder.brokers: kafka
-
----
-spring.config.activate.on-profile: streaming_partitioned
-
-spring.cloud.stream.bindings.account-microservice-in-0.consumer:
-  partition-key-expression: headers['partitionKey']
-  partition-count: 2
-  
-spring.cloud.stream.bindings.account-microservice-out-0.producer:
-  partition-key-expression: headers['partitionKey']
-  partition-count: 2
-
-spring.cloud.stream.bindings.customer-microservice-in-0.consumer:
-  partition-key-expression: headers['partitionKey']
-  partition-count: 2
-  
-spring.cloud.stream.bindings.customer-microservice-out-0.producer:
-  partition-key-expression: headers['partitionKey']
-  partition-count: 2
-
-spring.cloud.stream.bindings.payment-microservice-in-0.producer:
-  partition-key-expression: headers['partitionKey']
-  partition-count: 2
-  
-spring.cloud.stream.bindings.payment-microservice-out-0.producer:
-  partition-key-expression: headers['partitionKey']
-  partition-count: 2
 
 ---
 
@@ -102,11 +149,49 @@ management.health.binders.enabled: true
 spring:
   cloud:
     stream:
-      default-binder: kafka
       kafka:
-        streams:
-          binder:
-            replication-factor: 1
+        binder:
+          auto-add-partitions: true
+          auto-create-topics: false
+          auto-alter-topics: false
+          min-partition-count: 2
+          consumer-properties:
+            tx-commit-recovered: false
+            standard-headers: both
+            # TO DO: myCustomErrorHandler in which implements CommonErrorHandler
+            common-error-handler-bean-name: org.springframework.cloud.stream.config.ListenerContainerCustomizer
+            enable-dlq: true
+            dlq-name: errors
+            #TO DO: dlqProducerProperties.configuration.key.serializer
+            #TO DO: dlqProducerProperties.configuration.value.serializer
+          producer-properties:
+            sync: true
+            enable-dlq: true
+            dlq-name: errors            
+          transaction:
+            producer:
+              partition-key-expression: headers['partitionKey']
+              error-channel-enabled: true
+          replication-factor: 1
+          brokers:
+          - localhost:9092
   kafka:
+    listener:
+      type: batch
+    consumer:
+      max-poll-records: 20000
+      fetch-min-size: 10240000
+      fetch-max-wait: 10000
+      security:
+        protocol: SSL
+      ssl:
+        protocol: TLSv.3.0   
+      #properties:
+         #TO DO: transaction-manager: myCustomTransactionManager    
+    producer:
+      security:
+        protocol: SSL
+      ssl:
+        protocol: TLSv3.0
     bootstrap-servers:
     - localhost:9092

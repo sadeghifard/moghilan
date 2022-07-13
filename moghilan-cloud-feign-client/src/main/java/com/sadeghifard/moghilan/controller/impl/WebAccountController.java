@@ -1,6 +1,8 @@
 package com.sadeghifard.moghilan.controller.impl;
 
 import org.reactivestreams.Publisher;
+import org.springframework.util.MimeType;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,7 +47,7 @@ public class WebAccountController {
 		return webAccountService.getAccountsByCustomerNationalCode(customerNationalCode);
 	}
 	
-	@PostMapping(value = "/account")
+	@PostMapping(value = "/account", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	Mono<Account> saveAccount(@RequestBody Publisher<Account> account){
 		return webAccountService.saveAccount(account);
 	}
@@ -60,7 +62,7 @@ public class WebAccountController {
 		return webAccountService.updateByAccountNumber(account, accountNumber);
 	}
 	
-	@PutMapping(value = "/account/i/{id}")
+	@PutMapping(value = "/account/i/{id}", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	Mono<Account> updateById(@RequestBody Publisher<Account> account, @PathVariable Long id){
 		return webAccountService.updateById(account, id);
 	}
