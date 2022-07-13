@@ -174,7 +174,7 @@ spring:
               partition-key-expression: headers['partitionKey']
               sync: true
               error-channel-enabled: true
-              batch-timeout: 10
+              batch-timeout: 10000
               configuration:
                 key-serializer: org.apache.kafka.common.serialization.StringSerializer
                 value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
