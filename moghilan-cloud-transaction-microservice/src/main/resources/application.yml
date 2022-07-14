@@ -1,7 +1,20 @@
 server.forward-headers-strategy: framework
 
 server:
+  shutdown: graceful
+  ssl:
+    protocol: SASL_SSl
+  error:
+    include-exception: true
+    include-message: always
+    whitelabel:
+      enabled: false
+    include-binding-errors: always
+  reactive:
+    session:
+      timeout: 1800
   port: 10004
+
 eureka:
   client:
     service-url:
@@ -24,9 +37,9 @@ spring:
             batch-mode: true
             partitioned: true
             header-mode: headers
-            instance-count: 2
-            instance-index: 1
-            concurrency: 2
+            instance-count: 4
+            instance-index: 3
+            concurrency: 8
         account-service-out-0:
           binder: account-broker
           destination: accounts
@@ -50,9 +63,9 @@ spring:
             batch-mode: true
             partitioned: true
             header-mode: headers
-            instance-count: 2
-            instance-index: 1
-            concurrency: 2
+            instance-count: 4
+            instance-index: 3
+            concurrency: 8
         customer-service-out-0:
           binder: customer-broker
           destination: customers
@@ -76,8 +89,8 @@ spring:
             batch-mode: true
             partitioned: true
             header-mode: headers
-            instance-count: 2
-            instance-index: 1
+            instance-count: 4
+            instance-index: 3
             concurrency: 2 
         payment-service-out-0:
           binder: payment-broker
@@ -98,19 +111,19 @@ spring:
           environment:
             spring:
               kafka:
-                host: localhost:9092  
+                host: localhost:9092, localhost:9093, localhost:9094, localhost:9095 
         customer-broker:
           type: kafka
           environment:
             spring:
               kafka:
-                host: localhost:9092 
+                host: localhost:9092, localhost:9093, localhost:9094, localhost:9095  
         payment-broker:
           type: kafka
           environment:
             spring:
               kafka:
-                host: localhost:9092 
+                host: localhost:9092, localhost:9093, localhost:9094, localhost:9095
 
 # spring.cloud.stream.bindings.func-out-0.producer.partitionKeyExtractorName=customPartitionKeyExtractor
 
@@ -136,16 +149,20 @@ spring:
     stream:
       kafka:
         binder:
-         brokers: account-broker, customer-broker, payment-broker
+          brokers: account-broker, customer-broker, payment-broker
   kafka:
     bootstrap-servers:
     - localhost:9092
+    - localhost:9093
+    - localhost:9094
+    - localhost:9095
 
 ---
 
 spring.config.activate.on-profile: kafka
 
 management.health.binders.enabled: true
+
 spring:
   cloud:
     stream:
@@ -165,39 +182,51 @@ spring:
             #TO DO: dlqProducerProperties.configuration.key.serializer
             #TO DO: dlqProducerProperties.configuration.value.serializer
           producer-properties:
+            ack-mode: all
             closed-timeout: 10
             enable-dlq: true
             dlq-name: errors  
           transaction:
             producer:
+              #TO DO: transaction-manager: myCustomTransactionManager using ChainedKafkaTransactionManager
+              buffer-size: 10240000
+              compression-type: zstd
               message-key-expression: headers.id
               partition-key-expression: headers['partitionKey']
               sync: true
               error-channel-enabled: true
               batch-timeout: 10000
-              configuration:
-                key-serializer: org.apache.kafka.common.serialization.StringSerializer
-                value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-          replication-factor: 1
+              topic:
+                replicas-assignments:
+          replication-factor: 4
           brokers:
           - localhost:9092
+          - localhost:9093
+          - localhost:9094
+          - localhost:9095
   kafka:
     listener:
       type: batch
     consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringSerializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonSerializer
       max-poll-records: 20000
       fetch-min-size: 10240000
       fetch-max-wait: 10000
       security:
-        protocol: SSL
+        protocol: SASL_SSL
       ssl:
-        protocol: TLSv.3.0
-      #properties:
-         #TO DO: transaction-manager: myCustomTransactionManager using ChainedKafkaTransactionManager    
+        protocol: TLSv3.0
     producer:
+      compression-type: zstd
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       security:
-        protocol: SSL
+        protocol: SASL_SSL
       ssl:
         protocol: TLSv3.0
     bootstrap-servers:
     - localhost:9092
+    - localhost:9093
+    - localhost:9094
+    - localhost:9095

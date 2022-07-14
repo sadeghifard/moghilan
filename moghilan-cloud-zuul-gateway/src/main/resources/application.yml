@@ -23,6 +23,9 @@ zuul:
     customer-microservice:
       path: /customers/**
       serviceId: CUSTOMER-MICROSERVICE
+    payment-microservice:
+      path: /payments/**
+      serviceId: PAYMENT-MICROSERVICE
     transaction-microservice:
       path: /customers/**
       serviceId: TRANSACTION-MICROSERVICE
