@@ -1,6 +1,8 @@
 server.forward-headers-strategy: framework
 
 server:
+  compression:
+    enabled: true
   shutdown: graceful
   ssl:
     protocol: SASL_SSl
@@ -199,11 +201,8 @@ spring:
               topic:
                 replicas-assignments:
           replication-factor: 4
-          brokers:
-          - localhost:9092
-          - localhost:9093
-          - localhost:9094
-          - localhost:9095
+          brokers: account-broker, customer-broker, payment-broker
+
   kafka:
     listener:
       type: batch

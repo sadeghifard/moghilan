@@ -1,8 +1,21 @@
 server:
   port: 6063
+  compression:
+    enabled: true
+
 eureka:
   client:
     service-url:
       default-zone: ${EUREKA_URI:http://localhost:8761/_discovery_server}
     instance:
       prefer-ip-address: true
+
+spring:
+  mail:
+    host: localhost
+    port: 25
+    protocol: https
+    test-connection: true
+    username: moghilan
+    password: moghilan
+    default-encoding: UTF-8
