@@ -199,8 +199,8 @@ spring:
               error-channel-enabled: true
               batch-timeout: 10000
               topic:
-                replicas-assignments:
-          replication-factor: 4
+                replicas-assignments: {0: [0,1,2], 1: [1,2,3], 2: [0,2,3], 3: [1,2,3]}
+                replication-factor: 4
           brokers: account-broker, customer-broker, payment-broker
 
   kafka:
@@ -229,3 +229,8 @@ spring:
     - localhost:9093
     - localhost:9094
     - localhost:9095
+  jackson:
+    serialization:
+      indent-output: true
+    deserialization:
+      read-enums-using-to-string: true
