@@ -112,26 +112,31 @@ spring:
           type: kafka
           environment:
             spring:
-              kafka:
-                host: localhost:9092, localhost:9093, localhost:9094, localhost:9095 
+              cloud:
+                stream:
+                  kafka:
+                    binder:
+                      brokers: localhost:9092, localhost:9093, localhost:9094, localhost:9095
         customer-broker:
           type: kafka
           environment:
             spring:
-              kafka:
-                host: localhost:9092, localhost:9093, localhost:9094, localhost:9095  
+              cloud:
+                stream:
+                  kafka:
+                    binder:
+                      brokers: localhost:9092, localhost:9093, localhost:9094, localhost:9095  
         payment-broker:
           type: kafka
           environment:
             spring:
-              kafka:
-                host: localhost:9092, localhost:9093, localhost:9094, localhost:9095
+              cloud:
+                stream:
+                  kafka:
+                    binder:
+                      brokers: localhost:9092, localhost:9093, localhost:9094, localhost:9095
 
 # spring.cloud.stream.bindings.func-out-0.producer.partitionKeyExtractorName=customPartitionKeyExtractor
-
-spring.cloud.stream.kafka.binder:
-  brokers: 
-  - localhost:9092
 
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
@@ -151,7 +156,11 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: account-broker, customer-broker, payment-broker
+          brokers:
+          - localhost:9092
+          - localhost:9093
+          - localhost:9094
+          - localhost:9095
   kafka:
     bootstrap-servers:
     - localhost:9092
@@ -174,6 +183,11 @@ spring:
           auto-create-topics: false
           auto-alter-topics: false
           min-partition-count: 2
+          configuration:
+            security:
+              protocol: SASL_SSL
+            ssl:
+              protocol: TLSv3.0
           consumer-properties:
             tx-commit-recovered: false
             standard-headers: both
@@ -181,17 +195,16 @@ spring:
             common-error-handler-bean-name: org.springframework.cloud.stream.config.ListenerContainerCustomizer
             enable-dlq: true
             dlq-name: errors
-            #TO DO: dlqProducerProperties.configuration.key.serializer
-            #TO DO: dlqProducerProperties.configuration.value.serializer
           producer-properties:
             ack-mode: all
             closed-timeout: 10
             enable-dlq: true
             dlq-name: errors  
           transaction:
+            transaction-id-prefix: tx-id
             producer:
-              #TO DO: transaction-manager: myCustomTransactionManager using ChainedKafkaTransactionManager
               buffer-size: 10240000
+              transaction-manager: com.sadeghifard.moghilan.config.transaction.TransationManager
               compression-type: zstd
               message-key-expression: headers.id
               partition-key-expression: headers['partitionKey']
@@ -201,7 +214,11 @@ spring:
               topic:
                 replicas-assignments: {0: [0,1,2], 1: [1,2,3], 2: [0,2,3], 3: [1,2,3]}
                 replication-factor: 4
-          brokers: account-broker, customer-broker, payment-broker
+          brokers:
+          - localhost:9092
+          - localhost:9093
+          - localhost:9094
+          - localhost:9095
 
   kafka:
     listener:
@@ -232,5 +249,10 @@ spring:
   jackson:
     serialization:
       indent-output: true
+      write-char-arrays-as-json-arrays: true
+      write-enums-using-to-string: true
     deserialization:
       read-enums-using-to-string: true
+      accept-empty-array-as-null-object: true
+      accept-empty-string-as-null-object: true
+      fail-on-invalid-subtype: true
