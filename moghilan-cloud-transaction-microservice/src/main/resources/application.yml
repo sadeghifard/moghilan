@@ -109,7 +109,7 @@ spring:
             error-channel-enabled: true
       binders:
         account-broker:
-          type: kafka
+          type: rabbit
           environment:
             spring:
               cloud:
@@ -204,7 +204,7 @@ spring:
             transaction-id-prefix: tx-id
             producer:
               buffer-size: 10240000
-              transaction-manager: com.sadeghifard.moghilan.config.transaction.TransationManager
+              transaction-manager: com.sadeghifard.moghilan.config.transaction.MoghilanKafkaTransactionManager
               compression-type: zstd
               message-key-expression: headers.id
               partition-key-expression: headers['partitionKey']
@@ -251,6 +251,7 @@ spring:
       indent-output: true
       write-char-arrays-as-json-arrays: true
       write-enums-using-to-string: true
+      wrap-exceptions: true
     deserialization:
       read-enums-using-to-string: true
       accept-empty-array-as-null-object: true
