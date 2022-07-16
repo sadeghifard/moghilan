@@ -31,11 +31,22 @@ public class TransactionManager implements ReactiveTransactionManager {
 	
 	@Override
 	public Mono<Void> commit(ReactiveTransaction transaction) throws TransactionException {
-		ProducerFactory<byte[], byte[]> producerFactory = ((KafkaMessageChannelBinder) binders.getBinder(null, MessageChannel.class)).getTransactionalProducerFactory();
-	    KafkaTransactionManager<byte[], byte[]> txManager = new KafkaTransactionManager<>(producerFactory);
-	    txManager.setTransactionIdPrefix(txId);
+		ProducerFactory<byte[], byte[]> accountProducerFactory = ((KafkaMessageChannelBinder) binders.getBinder("account-broker", MessageChannel.class)).getTransactionalProducerFactory();
+	    KafkaTransactionManager<byte[], byte[]> accountTxManager = new KafkaTransactionManager<>(accountProducerFactory);
+	    accountTxManager.setTransactionIdPrefix(txId);
+	   
+	    ProducerFactory<byte[], byte[]> customerProducerFactory = ((KafkaMessageChannelBinder) binders.getBinder("customer-broker", MessageChannel.class)).getTransactionalProducerFactory();
+	    KafkaTransactionManager<byte[], byte[]> customerTxManager = new KafkaTransactionManager<>(customerProducerFactory);
+	    customerTxManager.setTransactionIdPrefix(txId);
+	    
+	    ProducerFactory<byte[], byte[]> paymentProducerFactory = ((KafkaMessageChannelBinder) binders.getBinder("payment-broker", MessageChannel.class)).getTransactionalProducerFactory();
+	    KafkaTransactionManager<byte[], byte[]> paymentTxManager = new KafkaTransactionManager<>(paymentProducerFactory);
+	    paymentTxManager.setTransactionIdPrefix(txId);
+	    
 	    if(transactionStatus.isNewTransaction()) {
-	    	txManager.commit(transactionStatus);
+	    	accountTxManager.commit(transactionStatus);
+	    	customerTxManager.commit(transactionStatus);
+	    	paymentTxManager.commit(transactionStatus);
 	    }
 		return Mono.empty();
 	}
