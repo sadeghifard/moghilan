@@ -2,7 +2,7 @@ package com.sadeghifard.moghilan.service;
 
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.integration.annotation.InboundChannelAdapter;
-import org.springframework.messaging.Message;
+import org.springframework.messaging.support.GenericMessage;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +18,9 @@ public class TransactionCompositionService {
 	
 	
 	@InboundChannelAdapter(channel = Source.OUTPUT, autoStartup = "true")
-    public Message generate() throws Exception {
+    public GenericMessage<?> generate() throws Exception {
         String value = Utility.tokenGenerator();
-        System.out.println("Sending: " + value);
-        return (Message) MessageBuilder.withPayload(payload).setHeader(partitionKey, value).build();
+        return (GenericMessage<?>) MessageBuilder.withPayload(payload).setHeader(partitionKey, value).build();
     }
 
 }
