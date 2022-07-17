@@ -93,7 +93,7 @@ spring:
             header-mode: headers
             instance-count: 4
             instance-index: 3
-            concurrency: 2 
+            concurrency: 8
         payment-service-out-0:
           binder: payment-broker
           destination: payments
@@ -135,8 +135,6 @@ spring:
                   kafka:
                     binder:
                       brokers: localhost:9092, localhost:9093, localhost:9094, localhost:9095
-
-# spring.cloud.stream.bindings.func-out-0.producer.partitionKeyExtractorName=customPartitionKeyExtractor
 
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
@@ -212,7 +210,7 @@ spring:
               error-channel-enabled: true
               batch-timeout: 10000
               topic:
-                replicas-assignments: {0: [0,1,2], 1: [1,2,3], 2: [0,2,3], 3: [1,2,3]}
+                replicas-assignments: {0: [0,1,2,3], 1: [0,1,2,3], 2: [0,1,2,3], 3: [0,1,2,3]}
                 replication-factor: 4
           brokers:
           - localhost:9092

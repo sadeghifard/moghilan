@@ -1,5 +1,7 @@
 package com.sadeghifard.moghilan.config.transaction;
 
+import java.util.Objects;
+
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,12 +34,11 @@ public class MoghilanKafkaTransactionManager implements ReactiveTransactionManag
 	private final TransactionStatus transactionStatus;
 	private final BinderFactory binders;
 	private Object dlqMessage;
-	
 	@Value(value = "${spring.cloud.stream.kafka.binder.transaction.transaction-id-prefix}")
 	private String txId;
 	
 	@Before("execution(* MoghilanKafkaTransactionManager.commit(.))")
-	@KafkaListener(topics = "${spring.cloud.stream.kafka.binder.consumer-properties.dlq-name}")
+	@KafkaListener(topics = "${spring.cloud.stream.kafka.binder.producer-properties.dlq-name}")
 	private void process(@Payload Object dlqMessage) {
 		this.dlqMessage = dlqMessage;
 	}
