@@ -1,17 +1,19 @@
 package com.sadeghifard.moghilan.config.transaction;
 
-import java.util.Objects;
-
+import org.apache.kafka.streams.errors.StreamsException;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.binder.BinderFactory;
 import org.springframework.cloud.stream.binder.kafka.KafkaMessageChannelBinder;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.support.GenericMessage;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.ReactiveTransaction;
 import org.springframework.transaction.ReactiveTransactionManager;
@@ -21,6 +23,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.reactive.GenericReactiveTransaction;
 
+import com.sadeghifard.moghilan.domain.Event;
+import com.sadeghifard.moghilan.enums.EventType;
+import com.sadeghifard.moghilan.utile.Utility;
 
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -33,12 +38,14 @@ public class MoghilanKafkaTransactionManager implements ReactiveTransactionManag
 	
 	private final TransactionStatus transactionStatus;
 	private final BinderFactory binders;
+	private final StreamBridge streamBridge;
 	private Object dlqMessage;
+	
 	@Value(value = "${spring.cloud.stream.kafka.binder.transaction.transaction-id-prefix}")
 	private String txId;
 	
 	@Before("execution(* MoghilanKafkaTransactionManager.commit(.))")
-	@KafkaListener(topics = "${spring.cloud.stream.kafka.binder.producer-properties.dlq-name}")
+	@KafkaListener(topics = "${spring.cloud.stream.kafka.binder.producer-properties.dlq-name:errors}")
 	private void process(@Payload Object dlqMessage) {
 		this.dlqMessage = dlqMessage;
 	}
@@ -83,7 +90,8 @@ public class MoghilanKafkaTransactionManager implements ReactiveTransactionManag
 		    }
 			return Mono.just(transaction);
 		} else {
-			throw new RuntimeException(dlqMessage.toString()); // TO DO: Change the type of exception.
+			sendMessage("errors", new Event(EventType.ROLLBACK, Utility.tokenGenerator(), new StreamsException("Rollback")));
+			return Mono.error(() ->  new StreamsException("Rollback"));
 		}
 	}
 
@@ -94,6 +102,14 @@ public class MoghilanKafkaTransactionManager implements ReactiveTransactionManag
 			return Mono.empty();
 		}
 		return null;
+	}
+	
+	private void sendMessage(String destination, Event event) {
+	  	event.setKey(Utility.tokenGenerator());
+	    GenericMessage<?> message = (GenericMessage<?>) MessageBuilder.withPayload(event)
+	      .setHeader("partitionKey", event.getKey())
+	      .build();
+	    streamBridge.send(destination, message);
 	}
 
 }
