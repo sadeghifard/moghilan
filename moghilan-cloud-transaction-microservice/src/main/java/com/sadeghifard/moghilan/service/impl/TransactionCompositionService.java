@@ -1,5 +1,6 @@
-package com.sadeghifard.moghilan.service;
+package com.sadeghifard.moghilan.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,11 @@ import com.sadeghifard.moghilan.domain.Customer;
 import com.sadeghifard.moghilan.domain.Event;
 import com.sadeghifard.moghilan.domain.Payment;
 import com.sadeghifard.moghilan.enums.EventType;
+import com.sadeghifard.moghilan.model.Transaction;
+import com.sadeghifard.moghilan.service.ITransactionCompositionService;
+import com.sadeghifard.moghilan.service.WebAccountService;
+import com.sadeghifard.moghilan.service.WebCustomerService;
+import com.sadeghifard.moghilan.service.WebPaymentService;
 import com.sadeghifard.moghilan.utile.Utility;
 
 import lombok.AllArgsConstructor;
@@ -28,7 +34,9 @@ import reactor.core.scheduler.Scheduler;
 @AllArgsConstructor
 @Component
 @Transactional
-public class TransactionCompositionService {
+public class TransactionCompositionService implements ITransactionCompositionService {
+	
+	private final TransactionService transactionService;
 	private final WebAccountService webAccountService;
 	private final WebCustomerService webCustomerService;
 	private final WebPaymentService webPaymentService;
@@ -70,20 +78,31 @@ public class TransactionCompositionService {
 		}
 	}
 	
+	@Override
 	@PostMapping(value = "/transaction")
-	public Mono<Void> save() {
+	public Mono<Void> saveTransaction() {
 		try {
 			checkConsumers();
 			if(accountEvent.getType().equals(EventType.SAVE) &&
 			   customerEvent.getType().equals(EventType.SAVE) &&
 			   paymentEvent.getType().equals(EventType.SAVE)) {
+				
 				Account account = webAccountService.saveAccount((Mono.just(accountEvent.getData())));
+				Transaction transaction = new Transaction(accountEvent.getType(), accountEvent.getKey(), account.toString(), LocalDateTime.now());
+				transactionService.saveTransaction(transaction);
+				
 				Customer customer = webCustomerService.saveCustomer((Mono.just(customerEvent.getData())));
+				transaction = new Transaction(customerEvent.getType(), customerEvent.getKey(), customer.toString(), LocalDateTime.now());
+				transactionService.saveTransaction(transaction);
+				
 				Payment payment = webPaymentService.savePayment((Mono.just(paymentEvent.getData())));
+				transaction = new Transaction(paymentEvent.getType(), paymentEvent.getKey(), payment.toString(), LocalDateTime.now());
+				transactionService.saveTransaction(transaction);
+				
 				List<Mono<Void>> messages = new ArrayList<>();
-				messages.add(Mono.fromRunnable(() -> sendMessage("accounts-out-0", new Event(EventType.COMMIT, Utility.tokenGenerator(), account))));
-				messages.add(Mono.fromRunnable(() -> sendMessage("customers-out-0", new Event(EventType.COMMIT, Utility.tokenGenerator(), customer))));
-				messages.add(Mono.fromRunnable(() -> sendMessage("payments-out-0", new Event(EventType.COMMIT, Utility.tokenGenerator(), payment))));
+				messages.add(Mono.fromRunnable(() -> sendMessage("accounts-out-0", new Event(EventType.COMMIT, accountEvent.getKey(), account))));
+				messages.add(Mono.fromRunnable(() -> sendMessage("customers-out-0", new Event(EventType.COMMIT, customerEvent.getKey(), customer))));
+				messages.add(Mono.fromRunnable(() -> sendMessage("payments-out-0", new Event(EventType.COMMIT, paymentEvent.getKey(), payment))));
 				return Mono.firstWithValue(messages).subscribeOn(publishEventScheduler).then();
 			}
 			return Mono.fromRunnable(() -> sendMessage("errors-out-0", new Event(EventType.ROLLBACK, Utility.tokenGenerator(), new StreamsException("Rollback"))))
@@ -95,20 +114,23 @@ public class TransactionCompositionService {
 		}
 	}
 	
+	@Override
 	@PutMapping(value = "/transaction")
-	public Mono<Void> update() {
+	public Mono<Void> updateTransaction() {
 		try {
 			checkConsumers();
 			if(accountEvent.getType().equals(EventType.UPDATE) &&
 			   customerEvent.getType().equals(EventType.UPDATE) &&
 			   paymentEvent.getType().equals(EventType.UPDATE)) {
+				
 				Account account = webAccountService.updateAccount((Mono.just(accountEvent.getData())));
 				Customer customer = webCustomerService.updateCustomer((Mono.just(customerEvent.getData())));
 				Payment payment = webPaymentService.updatePayment((Mono.just(paymentEvent.getData())));
+				
 				List<Mono<Void>> messages = new ArrayList<>();
-				messages.add(Mono.fromRunnable(() -> sendMessage("accounts-out-0", new Event(EventType.COMMIT, Utility.tokenGenerator(), account))));
-				messages.add(Mono.fromRunnable(() -> sendMessage("customers-out-0", new Event(EventType.COMMIT, Utility.tokenGenerator(), customer))));
-				messages.add(Mono.fromRunnable(() -> sendMessage("payments-out-0", new Event(EventType.COMMIT, Utility.tokenGenerator(), payment))));
+				messages.add(Mono.fromRunnable(() -> sendMessage("accounts-out-0", new Event(EventType.COMMIT, accountEvent.getKey(), account))));
+				messages.add(Mono.fromRunnable(() -> sendMessage("customers-out-0", new Event(EventType.COMMIT, customerEvent.getKey(), customer))));
+				messages.add(Mono.fromRunnable(() -> sendMessage("payments-out-0", new Event(EventType.COMMIT, paymentEvent.getKey(), payment))));
 				return Mono.firstWithValue(messages).subscribeOn(publishEventScheduler).then();
 			}
 			return Mono.fromRunnable(() -> sendMessage("errors-out-0", new Event(EventType.ROLLBACK, Utility.tokenGenerator(), new StreamsException("Rollback"))))

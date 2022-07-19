@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,12 +29,13 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "transactions")
 public class Transaction {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column(name = "event_type", nullable = false)
-	@JsonFormat(shape = Shape.STRING)
+	@Enumerated(EnumType.STRING)
 	private EventType eventType;
 	
 	@Column(name = "event_key", nullable = false)
@@ -45,5 +48,12 @@ public class Transaction {
 	@Column(name = "create_date", nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	private LocalDateTime createDate;
+	
+	public Transaction(EventType eventType, String eventKey, String objectSpec, LocalDateTime createDate) {
+		this.eventType = eventType;
+		this.eventKey = eventKey;
+		this.objectSpec = objectSpec;
+		this.createDate = createDate;
+	}
 
 }
