@@ -1,4 +1,4 @@
-package com.sadeghifard.moghilan.config;
+package com.sadeghifard.moghilan.config.session;
 
 import java.util.concurrent.ConcurrentHashMap;
 
