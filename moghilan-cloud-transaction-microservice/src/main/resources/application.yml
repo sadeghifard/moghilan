@@ -21,8 +21,13 @@ eureka:
   client:
     service-url:
       default-zone: ${EUREKA_URI:http://localhost:8761/_discovery_server}
+    initial-instance-info-replication-interval-seconds: 5
+    registry-fetch-interval-seconds: 5
     instance:
       prefer-ip-address: true
+      lease-renewal-interval-in-seconds: 5
+      lease-expiration-duration-in-seconds: 5
+      
 
 spring:
   cloud:
@@ -109,7 +114,7 @@ spring:
             error-channel-enabled: true
       binders:
         account-broker:
-          type: rabbit
+          type: kafka
           environment:
             spring:
               cloud:
@@ -136,6 +141,18 @@ spring:
                     binder:
                       brokers: localhost:9092, localhost:9093, localhost:9094, localhost:9095
 
+spring.cloud.stream.kafka.bindings.account-service-in-0.consumer:
+  enable-dlq: true
+  dlq-name: errors
+
+spring.cloud.stream.kafka.bindings.customer-service-in-0.consumer:
+  enable-dlq: true
+  dlq-name: errors
+
+spring.cloud.stream.kafka.bindings.payment-service-in-0.consumer:
+  enable-dlq: true
+  dlq-name: errors
+  
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
 
@@ -143,6 +160,7 @@ management.endpoints.web.exposure.include: "*"
 spring.config.activate.on-profile: docker
 
 server.port: 5050
+
 
 app:
   auth-server: localhost
@@ -170,6 +188,7 @@ spring:
 
 spring.config.activate.on-profile: kafka
 
+management.health.rabbit.enabled: false
 management.health.binders.enabled: true
 
 spring:

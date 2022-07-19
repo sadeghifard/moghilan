@@ -21,10 +21,10 @@ public interface WebPaymentService {
 	Flux<Payment> getAllPayments();
 	
 	@GetMapping("/payment/i/{id}")
-	Payment getById(@PathVariable Long id);
+	Payment getById(@PathVariable Mono<Long> id);
 	
 	@GetMapping("/payment/pc/{paymentCode}")
-	Payment getByPaymentCode(@PathVariable Long paymentCode);
+	Payment getByPaymentCode(@PathVariable Mono<Long> paymentCode);
 	
 	@GetMapping("/payment/pc/{paymentCode}")
 	Flux<Payment> getByPaymentType(@PathVariable PaymentType paymentType);
@@ -33,7 +33,7 @@ public interface WebPaymentService {
 	Payment savePayment(@RequestBody Mono<Payment> payment);
 	
 	@PutMapping(value = "/account")
-	Mono<Payment> updatePayment(Payment payment);
+	Payment updatePayment(@RequestBody Mono<Payment> payment);
 	
 	@PutMapping(value = "/account/i/{id}")
 	Mono<Payment> updateById(@RequestBody Mono<Payment> payment, @PathVariable Long id);
@@ -42,11 +42,11 @@ public interface WebPaymentService {
 	Mono<Payment> updateByPaymentCode(@RequestBody Mono<Payment> payment, @PathVariable Long paymentCode);
 	
 	@DeleteMapping("/payment")
-	Mono<String> deletePayment(@RequestBody Mono<Payment> payment);
+	String deletePayment(@RequestBody Mono<Payment> payment);
 	
 	@DeleteMapping("/payment/i/{id}")
-	Mono<String> deleteById(Long id);
+	String deleteById(@PathVariable Mono<Long> id);
 	
 	@DeleteMapping("/payment/pc/{paymentCode}")
-	Mono<String> deleteByPaymentCode(@PathVariable Long paymentCode);
+	String deleteByPaymentCode(@PathVariable Mono<Long> paymentCode);
 }

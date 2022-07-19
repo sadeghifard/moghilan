@@ -1,6 +1,5 @@
 package com.sadeghifard.moghilan.service;
 
-import org.reactivestreams.Publisher;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +32,7 @@ public interface WebCustomerService {
 	Customer saveCustomer(@RequestBody Mono<Customer> customer);
 	
 	@PutMapping(value = "/customer")
-	Mono<Customer> updateCustomer(@RequestBody Mono<Customer> customer);
+	Customer updateCustomer(@RequestBody Mono<Customer> customer);
 	
 	@PutMapping(value = "/customer/i/{id}")
 	Mono<Customer> updateById(@RequestBody Mono<Customer> customer, @PathVariable Long id);
