@@ -1,6 +1,5 @@
 package com.sadeghifard.moghilan.service;
 
-import org.reactivestreams.Publisher;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +31,7 @@ public interface WebAccountService {
 	Account saveAccount(@RequestBody Mono<Account> account);
 	
 	@PutMapping(value = "/account")
-	Mono<Account> updateAccount(@RequestBody Mono<Account> account);
+	Account updateAccount(@RequestBody Mono<Account> account);
 	
 	@PutMapping(value = "/account/an/{accountNumber}")
 	Mono<Account> updateByAccountNumber(@RequestBody Mono<Account> account, @PathVariable Long accountNumber);

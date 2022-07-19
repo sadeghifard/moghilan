@@ -39,20 +39,22 @@ public class MoghilanKafkaTransactionManager implements ReactiveTransactionManag
 	private final TransactionStatus transactionStatus;
 	private final BinderFactory binders;
 	private final StreamBridge streamBridge;
-	private Object dlqMessage;
+	private Throwable dlqError;
 	
 	@Value(value = "${spring.cloud.stream.kafka.binder.transaction.transaction-id-prefix}")
 	private String txId;
 	
 	@Before("execution(* MoghilanKafkaTransactionManager.commit(.))")
-	@KafkaListener(topics = "${spring.cloud.stream.kafka.binder.producer-properties.dlq-name:errors}")
-	private void process(@Payload Object dlqMessage) {
-		this.dlqMessage = dlqMessage;
+	@KafkaListener(topics = { "${spring.cloud.stream.kafka.binder.producer-properties.dlq-name:errors}",
+						      "${spring.cloud.stream.kafka.binder.consumer-properties.dlq-name:errors}"
+							})
+	private void process(Object message) {
+		this.dlqError = ((GenericMessage<Event<String, ? extends Throwable>>) message).getPayload().getData();
 	}
 	
 	@Override
 	public Mono<Void> commit(ReactiveTransaction transaction) throws TransactionException {
-		if(dlqMessage == null) {
+		if(dlqError == null) {
 			ProducerFactory<byte[], byte[]> accountProducerFactory = ((KafkaMessageChannelBinder) binders.getBinder("account-broker", MessageChannel.class)).getTransactionalProducerFactory();
 			KafkaTransactionManager<byte[], byte[]> accountTxManager = new KafkaTransactionManager<>(accountProducerFactory);
 		    accountTxManager.setTransactionIdPrefix(txId);
@@ -72,14 +74,15 @@ public class MoghilanKafkaTransactionManager implements ReactiveTransactionManag
 		    }
 		    return Mono.empty();
 		} else {
-			throw new RuntimeException(dlqMessage.toString()); // TO DO: Change the type of exception.
+			sendMessage("errors-out-0", new Event(EventType.ROLLBACK, Utility.tokenGenerator(), new StreamsException("Rollback")));
+			return Mono.error(() ->  new StreamsException("Rollback"));
 		}
 		
 	}
 
 	@Override
 	public Mono<ReactiveTransaction> getReactiveTransaction(TransactionDefinition definition) throws TransactionException {
-		if(dlqMessage == null) {
+		if(dlqError == null) {
 			Integer isoLevel = definition.ISOLATION_READ_COMMITTED;
 			GenericReactiveTransaction transaction = new GenericReactiveTransaction(definition, false, false, false, false, isoLevel);
 			
@@ -90,7 +93,7 @@ public class MoghilanKafkaTransactionManager implements ReactiveTransactionManag
 		    }
 			return Mono.just(transaction);
 		} else {
-			sendMessage("errors", new Event(EventType.ROLLBACK, Utility.tokenGenerator(), new StreamsException("Rollback")));
+			sendMessage("errors-out-0", new Event(EventType.ROLLBACK, Utility.tokenGenerator(), new StreamsException("Rollback")));
 			return Mono.error(() ->  new StreamsException("Rollback"));
 		}
 	}
