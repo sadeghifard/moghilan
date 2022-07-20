@@ -7,7 +7,7 @@ public enum EventType {
 	SAVE("save"),
 	UPDATE("update"),
 	DELETE("delete"),
-	COMMIT("commit"),
+	COMMITED("commited"),
 	ROLLBACK("rollback");
 	
 	private String type;
