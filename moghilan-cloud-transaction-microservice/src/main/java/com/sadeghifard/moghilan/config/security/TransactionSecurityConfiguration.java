@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
-import com.sadeghifard.moghilan.config.filter.TransactionWebSecurityFilter;
+import com.sadeghifard.moghilan.config.filter.PostWebSecurityFilter;
 
 import lombok.AllArgsConstructor;
 
@@ -25,7 +25,7 @@ import lombok.AllArgsConstructor;
 @EnableWebFluxSecurity
 public class TransactionSecurityConfiguration {
 	
-	private final TransactionWebSecurityFilter transactionWebSecurityFilter;
+	private final PostWebSecurityFilter postWebSecurityFilter;
 	
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -54,7 +54,7 @@ public class TransactionSecurityConfiguration {
 	
 	@Bean
 	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-		http.addFilterAfter(transactionWebSecurityFilter, SecurityWebFiltersOrder.LAST);
+		http.addFilterAfter(postWebSecurityFilter, SecurityWebFiltersOrder.LAST);
 		http.csrf()
 			.disable()
 			.authorizeExchange()

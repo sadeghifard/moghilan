@@ -18,25 +18,30 @@ import reactor.core.publisher.Mono;
 
 @Order(310)
 @AllArgsConstructor
-@Component("transactionWebSecurityFilter")
-@PostFilter("transactionWebSecurityFilter")
-public class TransactionWebSecurityFilter extends ServerWebExchangeContextFilter {
+@Component("postWebSecurityFilter")
+@PostFilter("postWebSecurityFilter")
+public class PostWebSecurityFilter extends ServerWebExchangeContextFilter {
 	
 	private final TransactionService transactionService;
 	
 	@Override
 	public Mono<Void> filter (ServerWebExchange exchange, WebFilterChain chain){
 		
-		GenericMessage<Event<String, Object>> message = exchange.getAttribute(EXCHANGE_CONTEXT_ATTRIBUTE);
-		EventType eventType = message.getPayload().getType();
-		String eventKey = message.getPayload().getKey(); 
-		Transaction transaction = transactionService.getTransactionByEventKey(eventKey);
-		if(transaction == null && 
-			(eventType.equals(EventType.GET) || 
-			 eventType.equals(EventType.DELETE) || 
-			 eventType.equals(EventType.UPDATE) ||
-			 eventType.equals(EventType.COMMIT))) {
-				message.getPayload().setType(EventType.ROLLBACK);
+		Object obj = exchange.getAttribute(EXCHANGE_CONTEXT_ATTRIBUTE);
+		GenericMessage<Event<String, Object>> message = null;
+		if(obj instanceof GenericMessage<?>) {
+			 message = (GenericMessage<Event<String, Object>>) obj;
+		}
+		if(message != null) {
+			EventType eventType = message.getPayload().getType();
+			String eventKey = message.getPayload().getKey(); 
+			Object eventData = message.getPayload().getData();
+			Transaction transaction = transactionService.getTransactionByEventKey(eventKey);
+			if((transaction == null && !eventType.equals(EventType.SAVE)) || 
+				(transaction != null && eventType.equals(EventType.SAVE)) ||
+				(eventData == null || eventKey == null)){
+					message.getPayload().setType(EventType.ROLLBACK);
+			}
 		}
 		return chain.filter(exchange);
 	}

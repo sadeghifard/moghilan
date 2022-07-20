@@ -100,9 +100,9 @@ public class TransactionCompositionService implements ITransactionCompositionSer
 				transactionService.saveTransaction(transaction);
 				
 				List<Mono<Void>> messages = new ArrayList<>();
-				messages.add(Mono.fromRunnable(() -> sendMessage("accounts-out-0", new Event(EventType.COMMIT, accountEvent.getKey(), account))));
-				messages.add(Mono.fromRunnable(() -> sendMessage("customers-out-0", new Event(EventType.COMMIT, customerEvent.getKey(), customer))));
-				messages.add(Mono.fromRunnable(() -> sendMessage("payments-out-0", new Event(EventType.COMMIT, paymentEvent.getKey(), payment))));
+				messages.add(Mono.fromRunnable(() -> sendMessage("accounts-out-0", new Event(EventType.COMMITED, accountEvent.getKey(), account))));
+				messages.add(Mono.fromRunnable(() -> sendMessage("customers-out-0", new Event(EventType.COMMITED, customerEvent.getKey(), customer))));
+				messages.add(Mono.fromRunnable(() -> sendMessage("payments-out-0", new Event(EventType.COMMITED, paymentEvent.getKey(), payment))));
 				return Mono.firstWithValue(messages).subscribeOn(publishEventScheduler).then();
 			}
 			return Mono.fromRunnable(() -> sendMessage("errors-out-0", new Event(EventType.ROLLBACK, Utility.tokenGenerator(), new StreamsException("Rollback"))))
@@ -128,9 +128,9 @@ public class TransactionCompositionService implements ITransactionCompositionSer
 				Payment payment = webPaymentService.updatePayment((Mono.just(paymentEvent.getData())));
 				
 				List<Mono<Void>> messages = new ArrayList<>();
-				messages.add(Mono.fromRunnable(() -> sendMessage("accounts-out-0", new Event(EventType.COMMIT, accountEvent.getKey(), account))));
-				messages.add(Mono.fromRunnable(() -> sendMessage("customers-out-0", new Event(EventType.COMMIT, customerEvent.getKey(), customer))));
-				messages.add(Mono.fromRunnable(() -> sendMessage("payments-out-0", new Event(EventType.COMMIT, paymentEvent.getKey(), payment))));
+				messages.add(Mono.fromRunnable(() -> sendMessage("accounts-out-0", new Event(EventType.COMMITED, accountEvent.getKey(), account))));
+				messages.add(Mono.fromRunnable(() -> sendMessage("customers-out-0", new Event(EventType.COMMITED, customerEvent.getKey(), customer))));
+				messages.add(Mono.fromRunnable(() -> sendMessage("payments-out-0", new Event(EventType.COMMITED, paymentEvent.getKey(), payment))));
 				return Mono.firstWithValue(messages).subscribeOn(publishEventScheduler).then();
 			}
 			return Mono.fromRunnable(() -> sendMessage("errors-out-0", new Event(EventType.ROLLBACK, Utility.tokenGenerator(), new StreamsException("Rollback"))))
